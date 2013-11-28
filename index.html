@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <textarea id="code" style="width: 800px; height: 200px;"></textarea>
+    <br/>
+    <a href="#" onclick="execute();">Eval</a>
+    <div id="executionOutput"></div>
+    <hr/>
+    <div id="compileOutput" style="font-family: courier new"></div>
+
+    <script>var module = {};</script>
+    <script src="core/parser.js"></script>
+    <script>
+        // Hackish initialization...
+        var Scheme = {}; 
+        Scheme.parser = module.exports;
+        Scheme.EMPTY_PAIR = {type: 'empty-pair'};
+    </script>
+    <script src="core/exceptions.js"></script>
+    <script src="core/environment.js"></script>
+    <script src="core/marshall.js"></script>
+    <script src="core/evaltable.js"></script>
+    <script src="core/strtable.js"></script>
+    <script src="core/forms.js"></script>
+    <script src="core/primitives.js"></script>
+    <script src="core/runner.js"></script>
+    <script>
+    var execute = function() {
+        // Extract and persist the code.
+        var code = document.getElementById('code').value;
+        localStorage.code = code;
+
+        var compileOutputBox = document.getElementById('compileOutput');
+        var executionOutputBox = document.getElementById('executionOutput');
+
+        compileOutputBox.textContent = '';
+        executionOutputBox.textContent = '';
+
+        var handleCompilerOutput = function(obj, success) {
+            if (success) {
+                // Render the tree as JSON
+                compileOutputBox.textContent = JSON.stringify(obj, undefined, 2);
+                compileOutputBox.innerHTML = compileOutputBox.textContent.replace(/\n/g, '<br/>').replace(/  /g, '&nbsp;&nbsp;');
+            } else {
+                compileOutputBox.textContent = obj.toString();
+            }
+        };
+
+        var handleExecutionOutput = function(obj, success) {
+            if (success) {
+                // Render the tree as JSON
+                executionOutputBox.textContent = obj;
+            } else {
+                executionOutputBox.textContent = obj.toString();
+            }
+        };
+
+
+        Scheme.run(code, handleCompilerOutput, handleExecutionOutput);
+    };
+
+    window.onload = function() {
+        document.getElementById('code').value = localStorage.code || '';
+    };
+    </script>
+</body>
+</html>
