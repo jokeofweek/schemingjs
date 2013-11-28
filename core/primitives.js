@@ -28,6 +28,16 @@ var makeFormals = function(values, variadic) {
   };
 };
 
+var toArray = function(list) {
+  var vals = [];
+  while (list !== Scheme.EMPTY_PAIR) {
+    Scheme.Marshall.expectType('pair', list);
+    vals.push(list.car);
+    list = list.cdr;
+  }
+  return vals;
+};
+
 makePrimitive('car', makeFormals(['p']), function(environment, p) {
   Scheme.Marshall.expectType('pair', p);
   return p.car;
@@ -48,6 +58,14 @@ makePrimitive('null?', makeFormals(['l']), function(environment, l) {
 
 makePrimitive('eval', makeFormals(['datum']), function(environment, datum) {
   return Scheme.eval(environment, Scheme.parser.parse(Scheme.stringify(datum))[0]);
+});
+
+makePrimitive('apply', makeFormals(['fn', 'vals'], false), function(environment, fn, vals) {
+  return Scheme.eval(environment, {
+    type: 'application',
+    first: fn,
+    rest: toArray(vals)
+  });
 });
 
 makePrimitive('list', makeFormals(['vals'], true), function(environment, vals) {
