@@ -125,9 +125,9 @@ var cdrStringify = function(form) {
   if (form === Scheme.EMPTY_PAIR) {
     return '';
   } else if (Scheme.Marshall.isType('pair', form)) {
-    return ' ' + Scheme.stringify(form.car) + ' ' + cdrStringify(form.cdr);
+    return ' ' + Scheme.stringify(form.car) + cdrStringify(form.cdr);
   } else {
-    return '. ' + Scheme.stringify(form);
+    return ' . ' + Scheme.stringify(form);
   }
 };
 
