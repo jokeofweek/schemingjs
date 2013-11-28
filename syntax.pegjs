@@ -37,7 +37,7 @@ expression
 expression_consume = e:expression whitespace* {return e;}
 
 constant 
-  = value:(boolean / number) { return {type: 'constant', value: value}; }
+  = value:(boolean / number / string) { return {type: 'constant', value: value}; }
 
 if
   = "(if " cond:expression_consume true_branch:expression_consume false_branch:expression_consume ")"
@@ -100,6 +100,13 @@ number "number"
 boolean 
   = "#t" { return true; }
   / "#f" { return false; }
+
+string = '"' chars:string_character* '"' { return chars.join(''); }
+
+string_character
+  = '\\"' { return '"'; }
+  / '\\\\' { return '\\'; }
+  / !('"' / '\\') char:. { return char; }
 
 symbol = identifier
 

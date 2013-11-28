@@ -21,11 +21,16 @@ register('variable', function(environment, form) {
   return environment.getValue(form.identifier);
 });
 
+var stringifyString = function(value) {
+  return '"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+};
+
 register('constant', function(environment, form) {
   return form;
 }, function(form) {
   if (form.value === true) return '#t';
-  if (form.value === false) return '#f';
+  else if (form.value === false) return '#f';
+  else if (typeof form.value === 'string') return stringifyString(form.value);
   return form.value;
 });
 
